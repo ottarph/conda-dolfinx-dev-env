@@ -86,9 +86,6 @@ Remote-specific tips:
 
 ## Notes
 
-- **Use conda, not mamba:** mamba 2.1.0 does not detect the macOS 27
-  version, which breaks the solve. conda ≥ 23.10 uses the same fast
-  libmamba solver and works.
 - **Complex PETSc:** change `petsc=*=real*` to `petsc=*=complex*` and the
   env name, then create a second environment.
 - **Compilers:** conda-forge's `c-compiler`/`cxx-compiler` ≥ 2.0 no longer
