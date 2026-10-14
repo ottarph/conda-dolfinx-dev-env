@@ -1,0 +1,85 @@
+# Conda environment containing every dependency needed to build FEniCSx
+# (UFL, Basix, FFCx, DOLFINx) from source. The FEniCSx packages
+# themselves are deliberately NOT included; build them with
+# ./build-fenicsx.sh after activating this environment.
+#
+#   conda env create -f environment.yml
+#   conda activate fenicsx-dev
+#   ./build-fenicsx.sh <dolfinx-commit-or-tag>
+#
+# Everything (compilers, MPI, PETSc, HDF5, nanobind, ...) comes from
+# conda-forge so that nothing from Homebrew or the system leaks in.
+#
+# For a complex-valued PETSc build, change `petsc=*=real*` to
+# `petsc=*=complex*` and the environment name, and create a second env.
+
+name: fenicsx-dev
+
+channels:
+  - conda-forge
+  - nodefaults
+
+dependencies:
+  # --- Toolchain ----------------------------------------------------------
+  - python=3.13
+  - pip
+  - c-compiler          # conda-forge clang (macOS) / gcc (Linux)
+  - cxx-compiler        # also used by the FFCx JIT via cffi at runtime
+  - cmake>=3.26
+  - ninja
+  - pkg-config
+  - make
+  - git
+
+  # --- MPI ----------------------------------------------------------------
+  # Pin one MPI implementation; all MPI-dependent packages below must be
+  # built against it.
+  - mpich
+  - mpi4py
+
+  # --- Linear algebra -----------------------------------------------------
+  - libblas             # needed by Basix
+  - liblapack
+  - petsc=*=real*
+  - petsc4py
+  - slepc
+  - slepc4py
+  - superlu_dist
+
+  # --- Graph partitioning -------------------------------------------------
+  - parmetis
+  - libscotch
+  - libptscotch
+  - kahip
+
+  # --- I/O ----------------------------------------------------------------
+  - hdf5=*=mpi_mpich*
+  - libadios2=*=mpi_mpich*
+
+  # --- Other C++ dependencies ---------------------------------------------
+  - libboost-devel>=1.81
+  - pugixml
+  - spdlog
+  - fmt
+  - catch2=3            # only needed for the DOLFINx C++ unit tests
+
+  # --- Python build backends / bindings -----------------------------------
+  - nanobind>=2.9.2
+  - scikit-build-core>=1.0.0
+  - setuptools>=77
+  - wheel
+
+  # --- Python runtime dependencies of FEniCSx -----------------------------
+  - numpy>=2
+  - cffi
+
+  # --- Testing, demos and convenience (optional) --------------------------
+  - pytest
+  - pytest-xdist
+  - scipy
+  - sympy
+  - matplotlib-base
+  - networkx
+  - numba
+  - python-gmsh
+  # - pyvista           # large (pulls in VTK); uncomment for plotting demos
